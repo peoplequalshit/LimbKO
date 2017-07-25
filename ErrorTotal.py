@@ -52,8 +52,6 @@ def SumlogPois(dummy):
 			sumlogpois+=-log(TMath.Poisson(measurement,model))
 	return sumlogpois
 def SimulateFlux(flux):
-        Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
-        Ebin=array('d',Ebinbefore)
 	flux=[]
 	for i in range(50):
 		flux.append(0)
@@ -66,6 +64,10 @@ def SimulateFlux(flux):
 		flux[i]=(((dNsb[i]/binwidth)/exposure)/livetime)/solidangle
 	return flux
 if __name__ == "__main__":
+	# declare energy bin
+    Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
+    Ebin=array('d',Ebinbefore)
+	# d
 	Fileflux=np.genfromtxt('dNsb.dat')
 	Eavgbin=Fileflux[:,1] # GOT Emidbin
 	# choose Emidbin only 3 point
