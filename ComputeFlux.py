@@ -18,7 +18,7 @@ dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5]
 Flux=[]
 Fluxbg=[]
 for i in range(50):
-    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])*1000) #why 1000?
+    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])) #why 1000?
     Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i]))
     print Flux[i]
     E1.SetBinContent(i+1,Flux[i])#*(Eavgbin[i]**2.75))

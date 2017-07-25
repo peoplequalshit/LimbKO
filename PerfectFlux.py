@@ -56,13 +56,13 @@ for i in range(len(V)-1):
     x2=expmap.GetXaxis().FindBin(360.)
     y1=expmap.GetYaxis().FindBin(180.-Zmax)
     y2=expmap.GetYaxis().FindBin(180.-Zmin)
-    intexplimb=expmap.Integral(x1,x2,y1,y2)/(360.*(Zmax-Zmin))
+    intexplimb=expmap.Integral(x1,x2,y1,y2)
     # int expmap bg
     x1=expmap.GetXaxis().FindBin(0.)
     x2=expmap.GetXaxis().FindBin(360.)
     y1=expmap.GetYaxis().FindBin(180.-Zbgmax)
     y2=expmap.GetYaxis().FindBin(180.-Zbgmin)
-    intexpbg=expmap.Integral(x1,x2,y1,y2)/(360.*(Zbgmax-Zbgmin))
+    intexpbg=expmap.Integral(x1,x2,y1,y2)
     i=i+1
     dNsb[i]=dN[i]-dNbg[i]*((Zmin-Zmax)/(Zbgmin-Zbgmax)) # weight str bg ti str limb
     EavgdN[i]=EavgdN[i]/dN[i]

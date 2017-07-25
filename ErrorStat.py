@@ -52,23 +52,23 @@ def SumlogPois(dummy):
 			sumlogpois+=-log(TMath.Poisson(measurement,model))
 	return sumlogpois
 def SimulateFlux(flux):
-    Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
-    Ebin=array('d',Ebinbefore)
 	flux=[]
 	for i in range(50):
 		flux.append(0)
-        Fileflux=np.genfromtxt('alldat.dat')
-        dNsb,Eavgbin=Fileflux[:,0],Fileflux[:,1]
+        Filedat=np.genfromtxt('alldat.dat')
+        dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	for i in range(len(flux)):
 		dNsb[i]=gRandom.PoissonD(dNsb[i]) # Random new dNsb
-		exposure=(aeff_f.value(Eavgbin[i]*1000.,61.5,0.)+aeff_b.value(Eavgbin[i]*1000.,61.5,0.))/10000.
-                binwidth=Ebin[i+1]-Ebin[i]
-		flux[i]=(((dNsb[i]/binwidth)/exposure)/livetime)/solidangle
+        binwidth=Ebin[i+1]-Ebin[i]
+		flux[i]=dNsb[i]/(binwidth*solidangle*expmap)
 	return flux
-
 if __name__ == "__main__":
+	# Declare energy bin
+	Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
+    Ebin=array('d',Ebinbefore)
+	# Open dat file
 	Filedat=np.genfromtxt('alldat.dat')
-	Eavgbin=Fileflux[:,1] # GOT Emidbin
+	Eavgbin=Filedat[:,1] # GOT Emidbin
     # open to write output parameters
 	foutput=open('outputStat.dat','w')
 	for i in range(number_simulation):
