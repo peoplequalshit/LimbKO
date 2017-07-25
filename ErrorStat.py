@@ -8,7 +8,7 @@ from scipy.optimize import fmin,minimize
 import os
 import sys
 import matplotlib.pyplot as plt ##try
-
+global Filedat,Ebinbefore,Ebin
 # my condition
 number_simulation=1
 initialguesspar=[34554,2.9,2.7,330.,0.000215] #initial guess Norm,gamma1,gamm2,Ebreak
@@ -53,14 +53,11 @@ def SumlogPois(dummy):
 	return sumlogpois
 def SimulateFlux(flux):
 	flux=[]
-	for i in range(50):
-		flux.append(0)
-        Filedat=np.genfromtxt('alldat.dat')
-        dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+    dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	for i in range(len(flux)):
 		dNsb[i]=gRandom.PoissonD(dNsb[i]) # Random new dNsb
         binwidth=Ebin[i+1]-Ebin[i]
-		flux[i]=dNsb[i]/(binwidth*solidangle*expmap)
+		flux.append(dNsb[i]/(binwidth*solidangle*expmap[i]))
 	return flux
 if __name__ == "__main__":
 	# Declare energy bin
@@ -72,7 +69,7 @@ if __name__ == "__main__":
     # open to write output parameters
 	foutput=open('outputStat.dat','w')
 	for i in range(number_simulation):
-		Flux=[] # create global variable
+		Flux=[] # create variable
 		Flux=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
 		# let Flux to E^{2.75}Flux
 		Flux_simulate275=[]

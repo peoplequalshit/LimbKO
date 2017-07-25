@@ -8,7 +8,7 @@ from scipy.optimize import fmin,minimize
 import os
 import sys
 import matplotlib.pyplot as plt ##try
-
+global Filedat,Ebinbefore,Ebin
 # my condition
 number_simulation=1
 initialguesspar=[34554,2.9,2.7,330.,0.000215] #initial guess Norm,gamma1,gamm2,Ebreak
@@ -53,22 +53,18 @@ def SumlogPois(dummy):
 	return sumlogpois
 def SimulateFlux(flux):
 	flux=[]
-	for i in range(50):
-		flux.append(0)
-        Fileflux=np.genfromtxt('dNsb.dat')
-        dNsb,Eavgbin=Fileflux[:,0],Fileflux[:,1]
+    dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	for i in range(len(flux)):
 		dNsb[i]=gRandom.PoissonD(dNsb[i]) # Random new dNsb
-		exposure=(aeff_f.value(Eavgbin[i]*1000.,61.5,0.)+aeff_b.value(Eavgbin[i]*1000.,61.5,0.))/10000.
-                binwidth=Ebin[i+1]-Ebin[i]
-		flux[i]=(((dNsb[i]/binwidth)/exposure)/livetime)/solidangle
+        binwidth=Ebin[i+1]-Ebin[i]
+		flux.append(dNsb[i]/(binwidth*solidangle*expmap[i]))
 	return flux
 if __name__ == "__main__":
-	# declare energy bin
+	# Declare energy bin
     Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
     Ebin=array('d',Ebinbefore)
-	# d
-	Fileflux=np.genfromtxt('dNsb.dat')
+	# open dat file
+	Filedat=np.genfromtxt('alldat.dat')
 	Eavgbin=Fileflux[:,1] # GOT Emidbin
 	# choose Emidbin only 3 point
 	Eavgbin_simulate=[Eavgbin[0],Eavgbin[24],Eavgbin[49]]
@@ -77,7 +73,7 @@ if __name__ == "__main__":
 	for i in range(number_simulation):
 		Flux=[] # create global variable
 		Flux=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
-		# random new flux only 3 point (Error sys.)
+		# random new flux only 3 point (Systematics error)
 		Flux_simulate1=gRandom.Gaus(Flux[0],Flux[0]*0.05)
 		Flux_simulate2=gRandom.Gaus(Flux[24],Flux[24]*0.05)
 		Flux_simulate3=gRandom.Gaus(Flux[49],Flux[49]*0.15)
