@@ -18,13 +18,15 @@ dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5]
 Flux=[]
 Fluxbg=[]
 for i in range(50):
-    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i]))
+    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])*1000.)
     Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i]))
     print Flux[i]
-    E1.SetBinContent(i+1,Flux[i])
+    E1.SetBinContent(i+1,Flux[i]*(Eavgbin[i]**2.75))
     Ebg.SetBinContent(i+1,Fluxbg[i])
 C=TCanvas('C','C',800,600)
 E1.SetMarkerStyle(20)
+E1.GetYaxis().SetTitle('Flux')
+E1.GetXaxis().SetTitle('E (GeV)')
 E1.Draw('P')
 Ebg.SetMarkerStyle(32)
 Ebg.Draw('Psame')
