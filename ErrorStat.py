@@ -52,12 +52,12 @@ def SumlogPois(dummy):
 			sumlogpois+=-log(TMath.Poisson(measurement,model))
 	return sumlogpois
 def SimulateFlux(flux):
-        Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
-        Ebin=array('d',Ebinbefore)
+    Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
+    Ebin=array('d',Ebinbefore)
 	flux=[]
 	for i in range(50):
 		flux.append(0)
-        Fileflux=np.genfromtxt('dNsb.dat')
+        Fileflux=np.genfromtxt('alldat.dat')
         dNsb,Eavgbin=Fileflux[:,0],Fileflux[:,1]
 	for i in range(len(flux)):
 		dNsb[i]=gRandom.PoissonD(dNsb[i]) # Random new dNsb
@@ -67,20 +67,20 @@ def SimulateFlux(flux):
 	return flux
 
 if __name__ == "__main__":
-	Fileflux=np.genfromtxt('dNsb.dat')
+	Filedat=np.genfromtxt('alldat.dat')
 	Eavgbin=Fileflux[:,1] # GOT Emidbin
-        # open to write output parameters
+    # open to write output parameters
 	foutput=open('outputStat.dat','w')
 	for i in range(number_simulation):
 		Flux=[] # create global variable
 		Flux=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
-                # let Flux to E^{2.75}Flux
+		# let Flux to E^{2.75}Flux
 		Flux_simulate275=[]
 		for i in range(len(Flux)):
 			Flux_simulate275.append(Flux[i]*(Eavgbin[i]**2.75))
 		FinalFlux_sim275=TGraph(50,array('d',Eavgbin),array('d',Flux_simulate275))
 		bestfit=fmin(SumlogPois,[32000,2.8,2.6,300.0,0.000215])
 		foutput.write('%f %f %f \n'%(bestfit[1],bestfit[2],bestfit[3]))
-		
+
 # close dat file
 foutput.close()
