@@ -36,11 +36,20 @@ for i in range(51): #have 0-50 but interest just 1-50
     EavgdNbg.append(0)
     dNsb.append(0)
 # process data
+#E=TH1F('E','E',len(V)-1,V)
 for event in ev:
+    #energy=ev.ENERGY
+    #if np.searchsorted(V,energy)>0 and np.searchsorted(V,energy)<51:
+    #   if event.ZENITH>Zmin and event.ZENITH<Zmax and event.THETA<70.:
+    #       dN[np.searchsorted(V,energy)]+=1.
+    #       E.Fill(energy)
+#print dN
+#for i in range(50):
+#   print E.GetBinContent(i+1)
     print event.EVENTS
     energy=0.936*ev.ENERGY # bias energy shift
     if np.searchsorted(V,energy)>0 and np.searchsorted(V,energy)<51:
-        if event.ZENITHSHIFT>Zmin and event.ZENITHSHIFT<Zmax and event.THETA < 70:# raw count
+        if event.ZENITHSHIFT>Zmin and event.ZENITHSHIFT<Zmax and event.THETA < 70.:# raw count
             dN[np.searchsorted(V,energy)]+=1.
             EavgdN[np.searchsorted(V,energy)]+=energy # sum before, average in next for-loop
         if event.ZENITHSHIFT>Zbgmin and event.ZENITHSHIFT<Zbgmax and event.THETA < 70:# bg count
@@ -57,8 +66,8 @@ for i in range(len(V)-1):
     intexplimb=expmap.Integral()/10000.
     # int expmap bg
     expmap=Fexpmap.Get(name_expmap[i])
-    expmap.GetXaxis().SetRangeUser(180.-Zbgmax,180.-Zbgmin)
-    expmap.GetYaxis().SetRangeUser(0.,360.)
+    expmap.GetYaxis().SetRangeUser(180.-Zbgmax,180.-Zbgmin)
+    expmap.GetXaxis().SetRangeUser(0.,360.)
     intexpbg=expmap.Integral()/10000.
     i=i+1
     dNsb[i]=dN[i]-dNbg[i]*((Zmin-Zmax)/(Zbgmin-Zbgmax)) # weight str bg ti str limb

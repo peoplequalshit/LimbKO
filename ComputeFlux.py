@@ -13,8 +13,8 @@ Zbgmax=108.
 solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2*pi
 solidanglebg=(cos(Zbgmin*(pi/180.))-cos(Zbgmax*(pi/180.)))*2*pi
 dat=np.genfromtxt('alldat.olo')
-dN,Eavgbin,expmap=dat[:,0],dat[:,1],dat[:,2]/10000. #Limb
-dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5]/10000. #background
+dN,Eavgbin,expmap=dat[:,0],dat[:,1],dat[:,2] #Limb
+dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5] #background
 Flux=[]
 Fluxbg=[]
 for i in range(50):
@@ -22,7 +22,7 @@ for i in range(50):
     Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i])*1000.)
     print Flux[i]
     E1.SetBinContent(i+1,Flux[i])#*(Eavgbin[i]**2.75))
-    Ebg.SetBinContent(i+1,Fluxbg[i])
+    Ebg.SetBinContent(i+1,Fluxbg[i])#*(Eavgbinbg[i]**2.75))
 C=TCanvas('C','C',800,600)
 E1.SetMarkerStyle(20)
 E1.GetYaxis().SetTitle('Flux')
