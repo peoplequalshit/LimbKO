@@ -52,17 +52,14 @@ for i in range(len(V)-1):
     # get expmap in each bin
     expmap=Fexpmap.Get(name_expmap[i])
     # int expmap limb
-    x1=expmap.GetXaxis().FindBin(0.)
-    x2=expmap.GetXaxis().FindBin(360.)
-    y1=expmap.GetYaxis().FindBin(180.-Zmax)
-    y2=expmap.GetYaxis().FindBin(180.-Zmin)
-    intexplimb=expmap.Integral(x1,x2,y1,y2)
+    expmap.GetYaxis().SetRangeUser(180.-Zmax,180.-Zmin)
+    expmap.GetXaxis().SetRangeUser(0.,360.)
+    intexplimb=expmap.Integral()/10000.
     # int expmap bg
-    x1=expmap.GetXaxis().FindBin(0.)
-    x2=expmap.GetXaxis().FindBin(360.)
-    y1=expmap.GetYaxis().FindBin(180.-Zbgmax)
-    y2=expmap.GetYaxis().FindBin(180.-Zbgmin)
-    intexpbg=expmap.Integral(x1,x2,y1,y2)
+    expmap=Fexpmap.Get(name_expmap[i])
+    expmap.GetXaxis().SetRangeUser(180.-Zbgmax,180.-Zbgmin)
+    expmap.GetYaxis().SetRangeUser(0.,360.)
+    intexpbg=expmap.Integral()/10000.
     i=i+1
     dNsb[i]=dN[i]-dNbg[i]*((Zmin-Zmax)/(Zbgmin-Zbgmax)) # weight str bg ti str limb
     EavgdN[i]=EavgdN[i]/dN[i]
