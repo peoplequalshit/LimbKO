@@ -7,7 +7,7 @@ import numpy as np
 from scipy.optimize import fmin,minimize
 import os
 import sys
-import matplotlib.pyplot as plt ##try
+import matplotlib.pyplot as plt
 global Filedat,Ebinbefore,Ebin
 # my condition
 number_simulation=1
