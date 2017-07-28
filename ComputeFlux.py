@@ -18,8 +18,8 @@ dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5] #background
 Flux=[]
 Fluxbg=[]
 for i in range(50):
-    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])) #why 1000?
-    Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i]))
+    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])) # problem with solidangle
+    Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i])) #
     print E1.GetBinWidth(i+1)
     E1.SetBinContent(i+1,Flux[i])#*(Eavgbin[i]**2.75))
     Ebg.SetBinContent(i+1,Fluxbg[i])#*(Eavgbinbg[i]**2.75))
