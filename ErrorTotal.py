@@ -15,7 +15,7 @@ initialguesspar=[34554,2.9,2.7,330.,0.000215] #initial guess Norm,gamma1,gamm2,E
 model='BPLwHe.f' #choose model SPL,BPL,SPLwHe,BPLwHe
 livetime=70761348.6153 # waiting for Warit's exposure map
 Zmin=110.0
-Zmax=111.6
+Zmax=111.6##
 solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
 # setting LAT performance
 pyIrfLoader.Loader_go()
