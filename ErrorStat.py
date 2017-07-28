@@ -1,5 +1,3 @@
-import pyLikelihood
-import pyIrfLoader
 from ROOT import *
 from math import *
 from array import *
@@ -7,7 +5,6 @@ import numpy as np
 from scipy.optimize import fmin,minimize
 import os
 import sys
-import matplotlib.pyplot as plt
 global Filedat,Ebinbefore,Ebin
 # my condition
 number_simulation=1
@@ -17,14 +14,6 @@ livetime=70761348.6153 # waiting for Warit's exposure map
 Zmin=110.0
 Zmax=111.6
 solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
-
-# setting LAT performance
-pyIrfLoader.Loader_go()
-myFactory=pyIrfLoader.IrfsFactory_instance()
-irfs_f=myFactory.create("P8R2_ULTRACLEANVETO_V6::FRONT")
-irfs_b=myFactory.create("P8R2_ULTRACLEANVETO_V6::BACK")
-aeff_f=irfs_f.aeff()
-aeff_b=irfs_b.aeff()
 
 def Fluxcompute(A,gamma1,gamm2,Ebreak,normAll):
 	os.system('gfortran %s frag.f -o test1.out' %(model))
@@ -51,7 +40,7 @@ def SumlogPois(dummy):
 		if TMath.Poisson(measurement,model)!=0:
 			sumlogpois+=-log(TMath.Poisson(measurement,model))
 	return sumlogpois
-def SimulateFlux(flux):
+def SimulateFlux(flux): # Simlate Random count (Stat. err.)
 	flux=[]
     dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	for i in range(len(flux)):

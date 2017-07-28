@@ -1,5 +1,3 @@
-import pyLikelihood
-import pyIrfLoader
 from ROOT import *
 from math import *
 from array import *
@@ -17,14 +15,6 @@ livetime=70761348.6153 # waiting for Warit's exposure map
 Zmin=110.0
 Zmax=111.6##
 solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
-# setting LAT performance
-pyIrfLoader.Loader_go()
-myFactory=pyIrfLoader.IrfsFactory_instance()
-irfs_f=myFactory.create("P8R2_ULTRACLEANVETO_V6::FRONT")
-irfs_b=myFactory.create("P8R2_ULTRACLEANVETO_V6::BACK")
-aeff_f=irfs_f.aeff()
-aeff_b=irfs_b.aeff()
-
 def Fluxcompute(A,gamma1,gamm2,Ebreak,normAll):
 	os.system('gfortran %s frag.f -o test1.out' %(model))
 	RunFlux='./test1.out %f %f %f %f %f'%(A,gamma1,gamm2,Ebreak,normAll)
