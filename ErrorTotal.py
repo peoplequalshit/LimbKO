@@ -17,7 +17,6 @@ livetime=70761348.6153 # waiting for Warit's exposure map
 Zmin=110.0
 Zmax=111.6
 solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
-
 # setting LAT performance
 pyIrfLoader.Loader_go()
 myFactory=pyIrfLoader.IrfsFactory_instance()
