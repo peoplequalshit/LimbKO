@@ -10,17 +10,17 @@ Zmin=110.0
 Zmax=111.6
 Zbgmin=100.
 Zbgmax=108.
-solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2*pi
-solidanglebg=(cos(Zbgmin*(pi/180.))-cos(Zbgmax*(pi/180.)))*2*pi
+solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
+solidanglebg=(cos(Zbgmin*(pi/180.))-cos(Zbgmax*(pi/180.)))*2.*pi
 dat=np.genfromtxt('alldat.olo')
 dN,Eavgbin,expmap=dat[:,0],dat[:,1],dat[:,2] #Limb
 dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5] #background
 Flux=[]
 Fluxbg=[]
 for i in range(50):
-    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])*1000.) #why 1000?
-    Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i])*1000.)
-    print Flux[i]
+    Flux.append(dN[i]/(E1.GetBinWidth(i+1)*solidangle*expmap[i])) #why 1000?
+    Fluxbg.append(dNbg[i]/(Ebg.GetBinWidth(i+1)*solidanglebg*expmapbg[i]))
+    print E1.GetBinWidth(i+1)
     E1.SetBinContent(i+1,Flux[i])#*(Eavgbin[i]**2.75))
     Ebg.SetBinContent(i+1,Fluxbg[i])#*(Eavgbinbg[i]**2.75))
 C=TCanvas('C','C',800,600)
