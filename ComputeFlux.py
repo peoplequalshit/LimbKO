@@ -13,8 +13,8 @@ Zbgmax=108.
 solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
 solidanglebg=(cos(Zbgmin*(pi/180.))-cos(Zbgmax*(pi/180.)))*2.*pi
 dat=np.genfromtxt('alldat.olo')
-dN,Eavgbin,expmap=dat[:,0],dat[:,1],dat[:,2] #Limb
-dNbg,Eavgbinbg,expmapbg=dat[:,3],dat[:,4],dat[:,5] #background
+dN,Eavgbin,flxlimb=dat[:,0],dat[:,1],dat[:,2] #Limb
+dNbg,Eavgbinbg,flxbg=dat[:,3],dat[:,4],dat[:,5] #background
 Flux=[]
 Fluxbg=[]
 for i in range(50):

@@ -42,36 +42,35 @@ def SumlogPois(dummy):
 	return sumlogpois
 def SimulateFlux(flux):
 	flux=[]
-    dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
-	for i in range(len(flux)):
-		dNsb[i]=gRandom.PoissonD(dNsb[i]) # Random new dNsb
-        binwidth=Ebin[i+1]-Ebin[i]
-		flux.append(dNsb[i]/(binwidth*solidangle*expmap[i]))
+    dNsb,Eavgbin,flxlimb=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+	flux.append()
+	for i in range(2):
+		flux.append((flxlimb/dNsb[i])*gRandom.PoissonD(dNsb[i]))
 	return flux
 if __name__ == "__main__":
 	# Declare energy bin
     Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
     Ebin=array('d',Ebinbefore)
 	# open dat file
-	Filedat=np.genfromtxt('alldat.dat')
+	Filedat=np.genfromtxt('alldat.olo')
 	Eavgbin=Fileflux[:,1] # GOT Emidbin
 	# choose Emidbin only 3 point
 	Eavgbin_simulate=[Eavgbin[0],Eavgbin[24],Eavgbin[49]]
-        # open to write output parameters
-        foutput=open('outputTotal.dat','w')
+    # open to write output parameters
+    foutput=open('outputTotal.dat','w')
 	for i in range(number_simulation):
 		Flux=[] # create global variable
 		Flux=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
 		# random new flux only 3 point (Systematics error)
 		Flux_simulate1=gRandom.Gaus(Flux[0],Flux[0]*0.05)
-		Flux_simulate2=gRandom.Gaus(Flux[24],Flux[24]*0.05)
-		Flux_simulate3=gRandom.Gaus(Flux[49],Flux[49]*0.15)
+		Flux_simulate2=gRandom.Gaus(Flux[1],Flux[24]*0.05)
+		Flux_simulate3=gRandom.Gaus(Flux[2],Flux[49]*0.15)
 		Flux_simulate=[Flux_simulate1,Flux_simulate2,Flux_simulate3]
-                Flux_simulate275=[]
-                for i in range(3):
-                        Flux_simulate275.append(Flux_simulate[i]*(Eavgbin_simulate[i]**2.75))
+        Flux_simulate275=[]
+        for i in range(3):
+				Flux_simulate275.append(Flux_simulate[i]*(Eavgbin_simulate[i]**2.75))
 		FinalFlux_sim275=TGraph(3,array('d',Eavgbin_simulate),array('d',Flux_simulate275))#cubic spline
-                bestfit=fmin(SumlogPois,[32000,2.8,2.6,300.0,0.000215])
+				bestfit=fmin(SumlogPois,[32000,2.8,2.6,300.0,0.000215])
 		foutput.write('%f %f %f \n' %(bestfit[1],bestfit[2],bestfit[3]))
 
 # close dat file

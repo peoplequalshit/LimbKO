@@ -42,18 +42,16 @@ def SumlogPois(dummy):
 	return sumlogpois
 def SimulateFlux(flux): # Simlate Random count (Stat. err.)
 	flux=[]
-    dNsb,Eavgbin,expmap=Filedat[:,0],Filedat[:,1],Filedat[:,2]
-	for i in range(len(flux)):
-		dNsb[i]=gRandom.PoissonD(dNsb[i]) # Random new dNsb
-        binwidth=Ebin[i+1]-Ebin[i]
-		flux.append(dNsb[i]/(binwidth*solidangle*expmap[i]))
+    dNsb,Eavgbin,flxlimb=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+	for i in range(len(dNsb)):
+		flux.append((flxlimb/dNsb[i])*gRandom.PoissonD(dNsb[i]))
 	return flux
 if __name__ == "__main__":
 	# Declare energy bin
 	Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
     Ebin=array('d',Ebinbefore)
 	# Open dat file
-	Filedat=np.genfromtxt('alldat.dat')
+	Filedat=np.genfromtxt('alldat.olo')
 	Eavgbin=Filedat[:,1] # GOT Emidbin
     # open to write output parameters
 	foutput=open('outputStat.dat','w')
