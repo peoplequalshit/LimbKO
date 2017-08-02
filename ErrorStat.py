@@ -33,19 +33,19 @@ def SumlogPois(dummy):
 	x,y=data[:,0],data[:,1]
 	sumlogpois=0
 	for i in range(len(x)):
-		measurement=FinalFlux_sim275.Eval(x[i],0,'S') # Cubic spline interpolate
+		measurement=Sim_Flux275.Eval(x[i],0,'S') # Cubic spline interpolate
 		model=y[i]*(x[i]**2.75)
 		if TMath.Poisson(measurement,model)==0:
 			sumlogpois+=308
 		if TMath.Poisson(measurement,model)!=0:
 			sumlogpois+=-log(TMath.Poisson(measurement,model))
 	return sumlogpois
-def SimulateFlux(flux): # Simlate Random count (Stat. err.)
+def SimulateFlux(flux275): # Simlate Random count (Stat. err.)
 	flux=[]
-    dNsb,Eavgbin,flxlimb=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+    dNsb,Eavgbin,flxlimb275=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	for i in range(len(dNsb)):
-		flux.append((flxlimb/dNsb[i])*gRandom.PoissonD(dNsb[i]))
-	return flux
+		flux.append((flxlimb275/dNsb[i])*gRandom.PoissonD(dNsb[i]))
+	return flux275
 if __name__ == "__main__":
 	# Declare energy bin
 	Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
@@ -56,13 +56,10 @@ if __name__ == "__main__":
     # open to write output parameters
 	foutput=open('outputStat.dat','w')
 	for i in range(number_simulation):
-		Flux=[] # create variable
-		Flux=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
+		Flux275=[] # create variable
+		Flux275=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
 		# let Flux to E^{2.75}Flux
-		Flux_simulate275=[]
-		for i in range(len(Flux)):
-			Flux_simulate275.append(Flux[i]*(Eavgbin[i]**2.75))
-		FinalFlux_sim275=TGraph(50,array('d',Eavgbin),array('d',Flux_simulate275))
+		Sim_Flux275=TGraph(50,array('d',Eavgbin),array('d',Flux275))
 		bestfit=fmin(SumlogPois,[32000,2.8,2.6,300.0,0.000215])
 		foutput.write('%f %f %f \n'%(bestfit[1],bestfit[2],bestfit[3]))
 
