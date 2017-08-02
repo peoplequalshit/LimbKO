@@ -40,8 +40,6 @@ for i in range(50): #have 0-50 but interest just 1-50
     dNsb.append(0)
 # process data
 for event in ev:
-#    if event.EVENTS==1000:
-#        break
 #    print event.EVENTS
 #    energy=ev.ENERGY
 #    if np.searchsorted(V,energy)>0 and np.searchsorted(V,energy)<51:
@@ -59,9 +57,6 @@ for event in ev:
         if event.ZENITHSHIFT>Zbgmin and event.ZENITHSHIFT<Zbgmax and event.THETA < 70.:# bg count
             dNbg[np.searchsorted(V,energy)-1]+=1.
             EavgdNbg[np.searchsorted(V,energy)-1]+=energy
-C=TCanvas('C','C',800,600)
-cntmap[10].Draw('COLZ')
-raw_input()
 #print dN
 # create strMap
 strmap=TH2F('strmap','strmap',180,0.,360.,800,0.,80.)
@@ -76,7 +71,6 @@ flxmap=[]
 for i in range(50):
     flxmapadd=cntmap[i].Clone()
     flxmap.append(flxmapadd)
-#print len(flxmap)
 flxvallimb=[]
 flxvalbg=[]
 # write dNsb,EavgdN to file
@@ -87,18 +81,14 @@ for i in range(len(V)-1):
     # Flxmap : flxmap=(cntmap/expmap)/dE/dOmega
     expmap=Fexpmap.Get(name_expmap[i])
     #expmap.Scale(1./10000.) # cm^2->m^2
-    # get flux value limb
+    #
     flxmap[i].Divide(cntmap[i],expmap)
     flxmap[i].Divide(flxmap[i],strmap)
-    #flxmap[i].Scale(10000./solidangle)
-    #flxmap[i].Scale(1./dE)
+    # get flux value limb
     flxmap[i].GetXaxis().SetRangeUser(0.,360.)
     flxmap[i].GetYaxis().SetRangeUser(180.-Zmax,180.-Zmin)
     flxvallimb.append(flxmap[i].Integral()/(dE))
     # get flux value bg
-    #flxmap[i].Divide(cntmap[i],expmap)
-    #flxmap[i].Scale(10000./solidanglebg)
-    #flxmap[i].Scale(1./dE)
     flxmap[i].GetXaxis().SetRangeUser(0.,360.)
     flxmap[i].GetYaxis().SetRangeUser(180.-Zbgmax,180.-Zbgmin)
     flxvalbg.append(flxmap[i].Integral()/dE)

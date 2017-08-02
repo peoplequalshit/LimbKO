@@ -64,6 +64,7 @@
          dNHdR=norm/(RH**gamma1)
          frac=sigmafrac*dNHedR*(1.0/dNHdR)*2.0
          factorHe=1.0+frac
+         !print *,(frac/(1.0+frac))*100
          !!
          sum=(Ep/Eg)*powerlaw*fff*dlEp*factorHe
          y=y+sum

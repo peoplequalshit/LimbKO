@@ -5,27 +5,21 @@ import numpy as np
 from scipy.optimize import fmin,minimize
 import os
 import sys
-import matplotlib.pyplot as plt ##t
 global Filedat,Ebinbefore,Ebin
 # my condition
-number_simulation=1
-initialguesspar=[34554,2.9,2.7,330.,0.000215] #initial guess Norm,gamma1,gamm2,Ebreak
-model='BPLwHe.f' #choose model SPL,BPL,SPLwHe,BPLwHe
-livetime=70761348.6153 # waiting for Warit's exposure map
-Zmin=110.0
-Zmax=111.6##
-solidangle=(cos(Zmin*(pi/180.))-cos(Zmax*(pi/180.)))*2.*pi
+number_simulation=5
+initialguesspar=[16000,2.849,2.716,336,0.000215] #initial guess Norm,gamma1,gamm2,Ebreak
+model='SPLwHe.f' #choose model SPL,BPL,SPLwHe,BPLwHe
 def Fluxcompute(A,gamma1,gamm2,Ebreak,normAll):
-	os.system('gfortran %s frag.f -o test1.out' %(model))
 	RunFlux='./test1.out %f %f %f %f %f'%(A,gamma1,gamm2,Ebreak,normAll)
 	os.system(RunFlux)
 def SumlogPois(dummy):
-        print dummy
+	#print dummy
 	A=dummy[0]
 	gamma1=dummy[1]
 	gamma2=dummy[2]
 	Ebreak=dummy[3]
-        normAll=dummy[4]
+	normAll=dummy[4]
 	Fluxcompute(A,gamma1,gamma2,Ebreak,normAll)
 	file=open('0.dat')
 	data=np.genfromtxt('0.dat')
@@ -33,45 +27,44 @@ def SumlogPois(dummy):
 	x,y=data[:,0],data[:,1]
 	sumlogpois=0
 	for i in range(len(x)):
-		measurement=FinalFlux_sim275.Eval(x[i],0,'S') # Cubic spline interpolate
+		measurement=Sim_Flux275.Eval(x[i],0,'S') # Cubic spline interpolate
 		model=y[i]*(x[i]**2.75)
 		if TMath.Poisson(measurement,model)==0:
-			sumlogpois+=308
+			sumlogpois+=308.
 		if TMath.Poisson(measurement,model)!=0:
 			sumlogpois+=-log(TMath.Poisson(measurement,model))
 	return sumlogpois
-def SimulateFlux(flux):
-	flux=[]
-    dNsb,Eavgbin,flxlimb=Filedat[:,0],Filedat[:,1],Filedat[:,2]
-	flux.append()
-	for i in range(2):
-		flux.append((flxlimb/dNsb[i])*gRandom.PoissonD(dNsb[i]))
-	return flux
+def SimulateFlux(flux275): # include
+	flux275=[]
+	dNsb,Eavgbin,flxlimb275=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+	# simulate random coutn (Statistical error)
+	simstat10GeV_flux275=(flxlimb275[0]/dNsb[0])*gRandom.PoissonD(dNsb[0])
+	simstat100GeV_flux275=(flxlimb275[24]/dNsb[24])*gRandom.PoissonD(dNsb[24])
+	simstat1000GeV_flux275=(flxlimb275[49]/dNsb[49])*gRandom.PoissonD(dNsb[49])
+	# simulate Systematic error (Aeff err.)
+	simtot10GeV_flux275=gRandom.Gaus(simstat10GeV_flux275,simstat10GeV_flux275*0.05)
+	simtot100GeV_flux275=gRandom.Gaus(simstat100GeV_flux275,simstat100GeV_flux275*0.05)
+	simtot1000GeV_flux275=gRandom.Gaus(simstat1000GeV_flux275,simstat1000GeV_flux275*0.15)
+	flux275.append(simtot10GeV_flux275)
+	flux275.append(simtot100GeV_flux275)
+	flux275.append(simtot1000GeV_flux275)
+	return flux275
 if __name__ == "__main__":
-	# Declare energy bin
-    Ebinbefore=[(10**((float(i)/25)+1)) for i in range(51)]
-    Ebin=array('d',Ebinbefore)
+	# Initialize model
+	os.system('gfortran %s frag.f -o test1.out' %(model))
 	# open dat file
 	Filedat=np.genfromtxt('alldat.olo')
-	Eavgbin=Fileflux[:,1] # GOT Emidbin
+	Eavgbin=Filedat[:,1] # GOT Emidbin
 	# choose Emidbin only 3 point
 	Eavgbin_simulate=[Eavgbin[0],Eavgbin[24],Eavgbin[49]]
     # open to write output parameters
-    foutput=open('outputTotal.dat','w')
+	foutput=open('outputTotal.dat','w')
 	for i in range(number_simulation):
-		Flux=[] # create global variable
-		Flux=SimulateFlux(Flux) # simulate new flux (Random Error stat.)
-		# random new flux only 3 point (Systematics error)
-		Flux_simulate1=gRandom.Gaus(Flux[0],Flux[0]*0.05)
-		Flux_simulate2=gRandom.Gaus(Flux[1],Flux[24]*0.05)
-		Flux_simulate3=gRandom.Gaus(Flux[2],Flux[49]*0.15)
-		Flux_simulate=[Flux_simulate1,Flux_simulate2,Flux_simulate3]
-        Flux_simulate275=[]
-        for i in range(3):
-				Flux_simulate275.append(Flux_simulate[i]*(Eavgbin_simulate[i]**2.75))
-		FinalFlux_sim275=TGraph(3,array('d',Eavgbin_simulate),array('d',Flux_simulate275))#cubic spline
-				bestfit=fmin(SumlogPois,[32000,2.8,2.6,300.0,0.000215])
+		Flux275=[] # create global variable
+		Flux275=SimulateFlux(Flux275) # simulate new flux (Random Error stat.)
+		Sim_Flux275=TGraph(3,array('d',Eavgbin_simulate),array('d',Flux275))
+		bestfit=fmin(SumlogPois,initialguesspar)
+		print bestfit
 		foutput.write('%f %f %f \n' %(bestfit[1],bestfit[2],bestfit[3]))
-
 # close dat file
 foutput.close()
