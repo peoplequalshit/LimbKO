@@ -7,9 +7,9 @@ import os
 import sys
 global Filedat,Ebinbefore,Ebin
 # my condition
-number_simulation=5
+number_simulation=2000
 mode=2 # 1=SPLwHe, 2=BPLwHe
-fitalgorithm=2 # 1=fmin,2=brute
+fitalgorithm=1 # 1=fmin,2=brute
 # Resolution of hill (when use brute force)
 if mode==1:
 	rangetrial=[slice(5000.,35000.,5000.),slice(2.5,3.0,0.1),slice(2.5,3.0,0.5),slice(200.,400.,200.),slice(0.0001,0.0003,0.0001)]
