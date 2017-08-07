@@ -7,9 +7,10 @@ import os
 import sys
 global Filedat,Ebinbefore,Ebin
 # my condition
-number_simulation=2000
-mode=1 # 1=SPLwHe, 2=BPLwHe
-# Resolution of hill
+number_simulation=5
+mode=2 # 1=SPLwHe, 2=BPLwHe
+fitalgorithm=2 # 1=fmin,2=brute
+# Resolution of hill (when use brute force)
 if mode==1:
 	rangetrial=[slice(5000.,35000.,5000.),slice(2.5,3.0,0.1),slice(2.5,3.0,0.5),slice(200.,400.,200.),slice(0.0001,0.0003,0.0001)]
 if mode==2:
@@ -40,26 +41,28 @@ def SumlogPois(dummy):
 	return sumlogpois
 def SimulateFlux(flux275): # include
 	flux275=[]
-	dNsb,Eavgbin,flxlimb275=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+	dNsb,Eavgbin,flxlimb=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	# simulate random coutn (Statistical error)
-	simstat10GeV_flux275=(flxlimb275[0]/dNsb[0])*gRandom.PoissonD(dNsb[0])
-	simstat100GeV_flux275=(flxlimb275[24]/dNsb[24])*gRandom.PoissonD(dNsb[24])
-	simstat1000GeV_flux275=(flxlimb275[49]/dNsb[49])*gRandom.PoissonD(dNsb[49])
+	simstat10GeV_flux=(flxlimb[0]/dNsb[0])*gRandom.PoissonD(dNsb[0])
+	simstat100GeV_flux=(flxlimb[24]/dNsb[24])*gRandom.PoissonD(dNsb[24])
+	simstat1000GeV_flux=(flxlimb[49]/dNsb[49])*gRandom.PoissonD(dNsb[49])
 	# simulate Systematic error (Aeff err.)
-	simtot10GeV_flux275=gRandom.Gaus(simstat10GeV_flux275,simstat10GeV_flux275*0.05)
-	simtot100GeV_flux275=gRandom.Gaus(simstat100GeV_flux275,simstat100GeV_flux275*0.05)
-	simtot1000GeV_flux275=gRandom.Gaus(simstat1000GeV_flux275,simstat1000GeV_flux275*0.15)
-	flux275.append(simtot10GeV_flux275)
-	flux275.append(simtot100GeV_flux275)
-	flux275.append(simtot1000GeV_flux275)
+	simtot10GeV_flux=gRandom.Gaus(simstat10GeV_flux,simstat10GeV_flux*0.05) # Error 5% at 10GeV
+	simtot100GeV_flux=gRandom.Gaus(simstat100GeV_flux,simstat100GeV_flux*0.05) # Error 5% at 100GeV
+	simtot1000GeV_flux=gRandom.Gaus(simstat1000GeV_flux,simstat1000GeV_flux*0.15) #Error 15% at 10GeV
+	flux275.append(simtot10GeV_flux*(Eavgbin[0]**2.75))
+	flux275.append(simtot100GeV_flux*(Eavgbin[24]**2.75))
+	flux275.append(simtot1000GeV_flux*(Eavgbin[49]**2.75))
 	return flux275
 if __name__ == "__main__":
 	# Initialize model
 	if mode==1:
+		modelname='SPLwHe'
 		model='SPLwHe.f'
 		# came from brute force
 		initialguesspar=[25247.9912,2.65232725,2.57566350,90.1658378,0.000271940836]
 	if mode==2:
+		modelname='BPLwHe'
 		model='BPLwHe.f'
 		# came from brute force
 		initialguesspar=[72287.4,2.7916925,2.60771950,349.226419,0.000197465908]
@@ -70,17 +73,21 @@ if __name__ == "__main__":
 	# choose Emidbin only 3 point
 	Eavgbin_simulate=[Eavgbin[0],Eavgbin[24],Eavgbin[49]]
     # open to write output parameters
-	foutput=open('outputTotal.dat','w')
+	foutput=open(modelname+'outputTotal.dat','w')
 	for i in range(number_simulation):
 		Flux275=[] # create global variable
 		Flux275=SimulateFlux(Flux275) # simulate new flux (Random Error stat.)
 		Sim_Flux275=TGraph(3,array('d',Eavgbin_simulate),array('d',Flux275))
 		if mode==1: #SPLwHe
-			bestfit=fmin(SumlogPois,initialguesspar)
-			#bestfit=brute(SumlogPois,rangetrial)
+			if fitalgorithm==1:
+				bestfit=fmin(SumlogPois,initialguesspar)
+			if fitalgorithm==2:
+				bestfit=brute(SumlogPois,rangetrial)
 		if mode==2: #BPLwHe
-			bestfit=fmin(SumlogPois,initialguesspar)
-			#bestfit=brute(SumlogPois,rangetrial)
+			if fitalgorithm==1:
+				bestfit=fmin(SumlogPois,initialguesspar)
+			if fitalgorithm==2:
+				bestfit=brute(SumlogPois,rangetrial)
 		foutput.write('%f %f %f \n' %(bestfit[1],bestfit[2],bestfit[3]))
 # close dat file
 foutput.close()

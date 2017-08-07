@@ -96,7 +96,7 @@ for i in range(len(V)-1):
     dNsb[i]=dN[i]-dNbg[i]*((Zmin-Zmax)/(Zbgmin-Zbgmax)) # weight str bg ti str limb
     EavgdN[i]=EavgdN[i]/dN[i]
     EavgdNbg[i]=EavgdNbg[i]/dNbg[i]
-    f1.write('%f %f %e %f %f %e\n'%(dNsb[i],EavgdN[i],flxvallimb[i]*(EavgdN[i]**2.75),dNbg[i],EavgdNbg[i],flxvalbg[i]*(EavgdNbg[i]**2.75)))
+    f1.write('%f %f %e %f %f %e\n'%(dNsb[i],EavgdN[i],flxvallimb[i],dNbg[i],EavgdNbg[i],flxvalbg[i]))
     # write count map in root file
 # Close all file
 Fexpmap.Close()

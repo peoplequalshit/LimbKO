@@ -7,9 +7,10 @@ import os
 import sys
 global Filedat,Ebinbefore,Ebin,rangetrial
 # my condition
-number_simulation=2000
-mode=1 # 1=SPLwHe, 2=BPLwHe
-# Resolution of hill
+number_simulation=5
+mode=2 # 1=SPLwHe, 2=BPLwHe
+fitalgorithm=2 # 1=fmin,2=brute
+# Resolution of hill (when use brute force)
 if mode==1:
 	rangetrial=[slice(5000.,35000.,5000.),slice(2.5,3.0,0.1),slice(2.5,3.0,0.5),slice(200.,400.,200.),slice(0.0001,0.0003,0.0001)]
 if mode==2:
@@ -40,17 +41,19 @@ def SumlogPois(dummy):
 	return sumlogpois
 def SimulateFlux(flux275): # Simlate Random count (Stat. err.)
 	flux275=[]
-	dNsb,Eavgbin,flxlimb275=Filedat[:,0],Filedat[:,1],Filedat[:,2]
+	dNsb,Eavgbin,flxlimb=Filedat[:,0],Filedat[:,1],Filedat[:,2]
 	for i in range(len(dNsb)):
-		flux275.append((flxlimb275[i]/dNsb[i])*gRandom.PoissonD(dNsb[i]))
+		flux275.append((flxlimb[i]/dNsb[i])*gRandom.PoissonD(dNsb[i])*(Eavgbin[i]**2.75))
 	return flux275
 if __name__ == "__main__":
 	# initialize model
 	if mode==1:
+		modelname'SPLwHe'
 		model='SPLwHe.f'
 		# came from brute force
 		initialguesspar=[25247.9912,2.65232725,2.57566350,90.1658378,0.000271940836]
 	if mode==2:
+		modelname='BPLwHe'
 		model='BPLwHe.f'
 		# came from brute force
 		initialguesspar=[72287.4,2.7916925,2.60771950,349.226419,0.000197465908]
@@ -59,19 +62,22 @@ if __name__ == "__main__":
 	Filedat=np.genfromtxt('alldat.olo')
 	Eavgbin=Filedat[:,1] # GOT Emidbin
     # open to write output parameters
-	foutput=open('outputStat.dat','w')
+	foutput=open(modelname+'outputStat.dat','w')
 	for i in range(number_simulation):
 		Flux275=[] # create variable
 		Flux275=SimulateFlux(Flux275) # simulate new flux (Random Error stat.)
 		# let Flux to E^{2.75}Flux
 		Sim_Flux275=TGraph(50,array('d',Eavgbin),array('d',Flux275))
 		if mode==1: #SPLwHe
-			#bestfit=brute(SumlogPois,rangetrial)
-			bestfit=fmin(SumlogPois,initialguesspar)
+			if fitalgorithm==1:
+				bestfit=fmin(SumlogPois,initialguesspar)
+			if fitalgorithm==2:
+				bestfit=brute(SumlogPois,rangetrial)
 		if mode==2: #BPLwHe
-			#bestfit=brute(SumlogPois,rangetrial)
-			bestfit=fmin(SumlogPois,initialguesspar)
-		print bestfit
+			if fitalgorithm==1:
+				bestfit=fmin(SumlogPois,initialguesspar)
+			if fitalgorithm==2:
+				bestfit=brute(SumlogPois,rangetrial)
 		foutput.write('%f %f %f \n'%(bestfit[1],bestfit[2],bestfit[3]))
 # close dat file
 foutput.close()
